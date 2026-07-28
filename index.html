@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>北部水厂三维可视化平台 — 模拟仿真模块 PRD</title>
+<style>
+:root {
+  --primary: #2C3947;
+  --accent: #547A95;
+  --text: #2C3947;
+  --bg: #E8EDF2;
+  --card-bg: #FFFFFF;
+  --table-head: #DAE2EA;
+  --border: #C4D0DB;
+  --muted: #5C6B7A;
+  --row-alt: #F1F5F9;
+  --code-bg: #EEF2F7;
+  /* 深蓝灰侧边栏 */
+  --nav-bg: #2C3947;
+  --nav-bg-grad: #38495A;
+  --nav-text: #C9D4DE;
+  --nav-text-hover: #FFFFFF;
+  --nav-active-bg: rgba(84,122,149,.42);
+  --nav-active-text: #FFFFFF;
+  --nav-active-bar: #7FA8C4;
+  --nav-border: rgba(148,163,184,.18);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  line-height: 1.75;
+  font-size: 15px;
+}
+.layout { display: flex; max-width: 1240px; margin: 0 auto; gap: 0; }
+/* 深蓝侧边导航 */
+.sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 28px 16px 40px;
+  background: linear-gradient(180deg, var(--nav-bg) 0%, var(--nav-bg-grad) 100%);
+  color: var(--nav-text);
+}
+.sidebar::-webkit-scrollbar { width: 8px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(148,163,184,.35); border-radius: 4px; }
+.sidebar h2 { font-size: 12px; color: #94A3B8; text-transform: uppercase; letter-spacing: .08em; margin: 0 0 16px; padding-left: 12px; }
+.sidebar .toc ul { list-style: none; margin: 0; padding-left: 14px; }
+.sidebar .toc > ul { padding-left: 0; }
+.sidebar .toc li { margin: 2px 0; }
+.sidebar .toc a {
+  color: var(--nav-text);
+  text-decoration: none;
+  display: block;
+  padding: 7px 12px;
+  border-radius: 7px;
+  font-size: 13.5px;
+  border-left: 3px solid transparent;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.sidebar .toc a:hover { background: rgba(255,255,255,.08); color: var(--nav-text-hover); }
+.sidebar .toc a.active {
+  background: var(--nav-active-bg);
+  color: var(--nav-active-text);
+  border-left-color: var(--nav-active-bar);
+  font-weight: 600;
+}
+/* 正文 */
+.content { flex: 1; min-width: 0; padding: 40px 48px 80px; }
+h1 { font-size: 28px; color: var(--primary); border-bottom: 3px solid var(--primary); padding-bottom: 14px; margin-top: 0; scroll-margin-top: 20px; }
+h2 { font-size: 22px; color: var(--primary); margin-top: 42px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); scroll-margin-top: 20px; }
+h3 { font-size: 18px; color: var(--accent); margin-top: 32px; scroll-margin-top: 20px; }
+h4 { font-size: 16px; color: var(--text); margin-top: 26px; scroll-margin-top: 20px; }
+h5 { font-size: 14.5px; color: var(--muted); margin-top: 22px; scroll-margin-top: 20px; }
+p { margin: 12px 0; }
+ul, ol { padding-left: 24px; }
+li { margin: 6px 0; }
+a { color: var(--accent); }
+strong { color: var(--accent); }
+table { border-collapse: collapse; width: 100%; margin: 18px 0; background: var(--card-bg); box-shadow: 0 1px 3px rgba(15,23,42,.06); border-radius: 8px; overflow: hidden; font-size: 14px; }
+th, td { border: 1px solid var(--border); padding: 10px 14px; text-align: left; vertical-align: top; }
+th { background: var(--table-head); color: var(--text); font-weight: 600; }
+tr:nth-child(even) td { background: var(--row-alt); }
+/* 接口概览表：等宽列 + 单元格内换行 */
+table.api-table { table-layout: fixed; }
+table.api-table th, table.api-table td { width: 25%; word-break: break-word; overflow-wrap: anywhere; }
+table.api-table td:nth-child(3) { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: 12.5px; color: var(--accent); line-height: 1.9; }
+code { background: var(--code-bg); padding: 2px 6px; border-radius: 4px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: 13px; color: #B91C1C; }
+pre { background: var(--code-bg); padding: 16px; border-radius: 8px; overflow-x: auto; }
+pre code { background: none; padding: 0; color: var(--text); }
+blockquote { border-left: 4px solid var(--primary); margin: 16px 0; padding: 8px 18px; background: var(--card-bg); color: var(--muted); border-radius: 0 6px 6px 0; }
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+@media (max-width: 900px) {
+  .layout { flex-direction: column; }
+  .sidebar { position: static; width: 100%; height: auto; }
+  .content { padding: 32px 20px 60px; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar">
+    <h2>目录</h2>
+    <div class="toc">
+<ul>
+<li><a href="#prd">北部水厂三维可视化平台 — 模拟仿真模块 PRD</a><ul>
+<li><a href="#1">1. 版本管理</a></li>
+<li><a href="#2">2. 模块描述</a><ul>
+<li><a href="#21">2.1 背景</a></li>
+<li><a href="#22">2.2 目标</a></li>
+<li><a href="#23">2.3 目标用户与应用价值</a></li>
+<li><a href="#24">2.4 布局概述</a></li>
+</ul>
+</li>
+<li><a href="#3">3. 功能需求</a><ul>
+<li><a href="#31">3.1 预测分析</a><ul>
+<li><a href="#311">3.1.1 需求概述</a></li>
+<li><a href="#312">3.1.2 当前实际输入窗口</a></li>
+<li><a href="#313">3.1.3 当前实时出厂水数据</a></li>
+<li><a href="#314">3.1.4 模型预测出厂水结果</a></li>
+<li><a href="#315">3.1.5 全流程预测展示节点卡片</a><ul>
+<li><a href="#3151">3.1.5.1 业务规则</a></li>
+<li><a href="#3152">3.1.5.2 交互逻辑</a></li>
+</ul>
+</li>
+<li><a href="#316">3.1.6 查看趋势</a></li>
+<li><a href="#317">3.1.7 超限预警机制</a></li>
+</ul>
+</li>
+<li><a href="#32">3.2 历史快照（历史工况回溯）</a><ul>
+<li><a href="#321">3.2.1 需求描述</a></li>
+<li><a href="#322">3.2.2 历史快照列表</a></li>
+<li><a href="#323">3.2.3 筛选查询</a></li>
+<li><a href="#324">3.2.4 历史快照详情</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#4">4. 页面与交互设计</a><ul>
+<li><a href="#41">4.1 页面导航</a></li>
+<li><a href="#42">4.2 主要交互元素</a></li>
+<li><a href="#43">4.3 页面跳转与状态重置</a></li>
+<li><a href="#44">4.4 全局业务规则（仅供参考）</a></li>
+</ul>
+</li>
+<li><a href="#5">5. 数据指标定义</a><ul>
+<li><a href="#51">5.1 进水（原水）指标</a></li>
+<li><a href="#52">5.2 出厂水指标</a></li>
+<li><a href="#53">5.3 指标状态标签</a></li>
+</ul>
+</li>
+<li><a href="#6">6. 数据接口概览</a></li>
+<li><a href="#7">7. 备注说明</a></li>
+</ul>
+</li>
+</ul>
+</div>
+
+  </nav>
+  <main class="content">
+    <h1 id="prd">北部水厂三维可视化平台 — 模拟仿真模块 PRD</h1>
+<h2 id="1">1. 版本管理</h2>
+<table>
+<thead>
+<tr>
+<th>版本号</th>
+<th>更新内容</th>
+<th>更新日期</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V1.0</td>
+<td>新建文档</td>
+<td>2026-07-28</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2">2. 模块描述</h2>
+<h3 id="21">2.1 背景</h3>
+<p>本模块为自来水厂三维可视化平台下的模拟仿真功能，基于智慧运营平台-水厂仿真模块的水力、水质仿真模型，结合厂区三维场景，实现水厂多工况模拟推演、水质指标预测、历史运行工况回溯，为工艺调度、应急指挥、生产优化提供可视化决策支撑。</p>
+<h3 id="22">2.2 目标</h3>
+<ul>
+<li>依托水力及水质仿真模型，对水厂生产多工况进行动态推演与趋势预测。</li>
+<li>提前预演生产方案与应急处置方案，实现工艺优化与应急演练。</li>
+<li>将预测数据与现场实际运行数据对比，超限自动预警，保障生产决策安全、科学。</li>
+</ul>
+<h3 id="23">2.3 目标用户与应用价值</h3>
+<ul>
+<li>目标用户：工艺调度人员、应急指挥人员。</li>
+<li>应用价值：面向多工况生产场景，提供沿工艺流程的可视化预测、实际与预测对比、历史工况复盘，辅助调度决策与应急演练。</li>
+</ul>
+<h3 id="24">2.4 布局概述</h3>
+<p>本模块沿用三维可视化平台的整体布局框架，在通用界面元素基础上叠加模块专属交互组件：
+- 保留平台顶部导航栏。
+- 保留左下角模块导航栏，并将当前选中模块置为「模拟仿真」。
+- 在页面右下方保留工艺段标签的显示/隐藏开关按钮。</p>
+<h2 id="3">3. 功能需求</h2>
+<h3 id="31">3.1 预测分析</h3>
+<h4 id="311">3.1.1 需求概述</h4>
+<p>预测分析页展示最近一次预测分析结果，即根据当前时间从历史快照中匹配最近一条快照并呈现其内容。页面以三维水厂场景为背景，叠加浮层交互组件，展示各工艺段水质指标、进水/出水实测与模型预测数据，并通过趋势图可视化指标变化趋势。</p>
+<h4 id="312">3.1.2 当前实际输入窗口</h4>
+<ul>
+<li>展示进水侧实测输入数据，取值时间窗口为「上一整点 ~ 当前整点」的 1 小时区间（如 16:00~17:00）。</li>
+<li>指标：进水流量（m³/h）、进水温度（℃）、进水 pH、进水浊度（NTU）、进水氨氮（mg/L）、进水溶解氧（mg/L）。</li>
+<li>业务规则：数值保留 4 位小数；快照模式从记录读取；该面板始终展示进水数据，不随卡片选中变化。</li>
+</ul>
+<h4 id="313">3.1.3 当前实时出厂水数据</h4>
+<ul>
+<li>展示当前整点时刻（如 17:00）实测出厂水指标：流量、浊度、余氯、pH。</li>
+<li>每项附状态标签：达标 / 不达标。</li>
+<li>业务规则：数据时间点为当前整点；数值保留 4 位小数；达标/不达标依据出厂水水质达标判断接口（/api/water-quality-standards/all）返回的上下限判定，超出范围判为「不达标」（红色）。</li>
+<li>交互逻辑：选中不同水质卡片时，面板标题联动变为「当前实时{工艺段名}数据」，数据切换为对应工艺段实时值；每项指标右侧显示状态标签。</li>
+</ul>
+<h4 id="314">3.1.4 模型预测出厂水结果</h4>
+<ul>
+<li>展示模型对未来时刻（如 00:40）的预测出厂水指标：流量、浊度、余氯、pH。</li>
+<li>业务规则：预测时间点取自预测分析接口返回的数据时间；数值保留 4 位小数；达标/不达标依据出厂水水质达标判断接口（/api/water-quality-standards/all）返回的上下限判定，超出范围判为「不达标」（红色）。</li>
+<li>交互逻辑：选中不同卡片时面板标题联动变为「模型预测{工艺段名}结果」，预测时间点与数据随工艺段切换；每项指标右侧显示状态标签。</li>
+<li>每项附状态标签，预测值超阈值时以红色「不达标」高亮标注。</li>
+</ul>
+<h4 id="315">3.1.5 全流程预测展示节点卡片</h4>
+<ul>
+<li>沿工艺流程展示各工艺段节点卡片：沉淀池、砂滤、超滤、清水池、出厂水。</li>
+<li>默认选中「出厂水」卡片；卡片绝对定位在三维底图对应工艺段位置，标题括号内为该工艺段对应的数据时间点。</li>
+<li>每个节点显示对应数据时间（取自预测分析接口，如沉淀池 20:00、砂滤 20:20、超滤 20:20、清水池 00:20、出厂水 00:40）及关键指标：流量（m³/h）、pH、浊度（NTU）、余氯（mg/L）。</li>
+<li>卡片支持展开/收起，提供“查看趋势”入口，并可与三维场景中的工艺段标签联动定位。</li>
+<li>全流程预测基准：各工艺段的数据时间均取自预测分析接口返回值，形成全流程预测时间区间（如 17:00 -&gt; 00:40），作为页面预测展示的时间基准。</li>
+</ul>
+<h5 id="3151">3.1.5.1 业务规则</h5>
+<p>（1）标题预测时刻</p>
+<p>各卡片标题时间直接对接预测分析接口返回的数据时间，前端不做时间计算，仅按接口返回值展示。</p>
+<table>
+<thead>
+<tr>
+<th>节点卡片</th>
+<th>对应工艺段位置</th>
+<th>时间来源</th>
+<th>示例（当前 14:00）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>沉淀池</td>
+<td>絮凝沉淀池（沉清叠合池）</td>
+<td>对接预测分析接口的数据时间</td>
+<td>17:00</td>
+</tr>
+<tr>
+<td>砂滤</td>
+<td>砂滤池</td>
+<td>对接预测分析接口的数据时间</td>
+<td>17:20</td>
+</tr>
+<tr>
+<td>超滤</td>
+<td>超滤膜车间</td>
+<td>对接预测分析接口的数据时间</td>
+<td>17:20</td>
+</tr>
+<tr>
+<td>清水池</td>
+<td>清水池（沉清叠合池）</td>
+<td>对接预测分析接口的数据时间</td>
+<td>21:20</td>
+</tr>
+<tr>
+<td>出厂水</td>
+<td>送水泵房</td>
+<td>对接预测分析接口的数据时间</td>
+<td>21:40</td>
+</tr>
+</tbody>
+</table>
+<p>（2）数据指标</p>
+<p>各工艺段（沉淀池、砂滤、超滤、清水池、出厂水）均包含流量（m³/h）、浊度（NTU）、pH、余氯（mg/L）字段，具体数值均通过接口获取。</p>
+<h5 id="3152">3.1.5.2 交互逻辑</h5>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>触发区域</th>
+<th>行为</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>卡片折叠</td>
+<td>卡片展开状态下点击标题行</td>
+<td>切换为折叠状态，仅显示标题行和展开按钮</td>
+<td>5 个卡片折叠状态不互斥，可同时存在</td>
+</tr>
+<tr>
+<td>卡片展开</td>
+<td>卡片折叠状态下点击标题行</td>
+<td>切换为展开状态，显示数据行与查看趋势按钮</td>
+<td>5 个卡片展开状态不互斥，可同时存在</td>
+</tr>
+<tr>
+<td>查看趋势</td>
+<td>点击卡片底部按钮</td>
+<td>按钮为选中状态，联动切换右侧 4 个趋势图标题和数据</td>
+<td>5 个卡片的查看按钮互斥</td>
+</tr>
+</tbody>
+</table>
+<p>默认状态：5 个卡片都是展开状态，并且出厂水为选中状态。</p>
+<p>选中态样式（仅供参考）：卡片蓝色发光边框，左侧指示箭头变蓝，底部查看趋势按钮变为选中态（蓝色边框白底）。</p>
+<h4 id="316">3.1.6 查看趋势</h4>
+<ul>
+<li>提供四张趋势图：出厂水流量、出厂水浊度、出厂水 pH、出厂水余氯；标题格式为「{工艺段}{指标}趋势」。</li>
+<li>纵轴单位：流量 m³/h、浊度 NTU、pH 无单位、余氯 mg/L。</li>
+<li>横轴规则：范围为「当前整点-3 小时 ~ 当前整点+4 小时」，共 8 个整点刻度，格式 HH:00；标注当前时刻基准（如 17:00）；标题栏同一行右侧显示：「当前整点-3 小时」 ~ 「当前整点+4 小时」 | 当前：「当前整点时刻」。</li>
+<li>双折线规则：实测值为白色实线（仅 -3h~0h 历史段有数据），预测值为蓝色虚线（-3h~+4h 全程有值）；仅出厂水的浊度/pH/余氯趋势图叠加安全阈值线，支持悬停查看数据点与超限点标识。</li>
+<li>阈值参考线：仅出厂水趋势图显示阈值线，沉淀池、砂滤、超滤、清水池趋势图均不显示。出厂水阈值线为——浊度达标线 1（红色）；pH 下限 6.5（红色）、上限 8.5（黄色）；余氯下限 0.3（红色）、上限 2（黄色）。</li>
+<li>交互逻辑：切换工艺段时四图标题与数据同步更新；快照模式冻结；支持 ECharts 原生 tooltip 悬浮查看数值；同步呈现实测与预测数据，支持对比分析偏差。</li>
+</ul>
+<h4 id="317">3.1.7 超限预警机制</h4>
+<ul>
+<li>当预测指标超出设定安全阈值时，自动触发超限提醒弹窗。</li>
+<li>业务规则：依据接口判断，返回超限数据时自动弹出预警弹窗；弹窗内的未来时间为「当前时间 + 2 小时」。</li>
+<li>交互逻辑：满足条件自动弹出，点击右上角 × 手动关闭；快照模式下按快照 status 字段决定显示（有预警显示、无预警隐藏）。</li>
+<li>提醒内容含时间、指标、预测值、设定限值（示例：“19:31 浊度预测值为 1.0 NTU，已超过设定限值 1 NTU，请注意”）。</li>
+<li>弹窗可关闭，超限指标在卡片与趋势图同步高亮。</li>
+</ul>
+<h3 id="32">3.2 历史快照（历史工况回溯）</h3>
+<h4 id="321">3.2.1 需求描述</h4>
+<p>历史快照模块用于存储和回溯水厂在不同时间点的运行工况快照。用户可通过时间区间和预警状态筛选查询历史快照记录，点击查看详情即可复现对应时刻的完整预测分析页面内容，为工艺调度复盘和历史数据追溯提供支撑。</p>
+<h4 id="322">3.2.2 历史快照列表</h4>
+<ul>
+<li>支持调取任意时间段历史运行工况，生成历史运行快照。</li>
+<li>表格结构：每条快照占两行，主行为「预测时间 | 模型版本 | 预警状态 | 操作（查看）」，摘要行跨列展示原水指标摘要。</li>
+<li>预警状态以徽章展示：有预警为红色、无预警为绿色。</li>
+<li>列表字段：预测时间、模型版本、预警状态、操作（查看）。</li>
+<li>每行附原水指标摘要：流量（m³/h）、温度（℃）、pH、浊度（NTU）。</li>
+</ul>
+<h4 id="323">3.2.3 筛选查询</h4>
+<ul>
+<li>筛选条件：预测时间区间（起止）、预警状态（全部 / 有预警 / 无预警）。</li>
+<li>默认值：开始时间为当天 00:00:00，结束时间为当前时刻，预警状态为「全部」。</li>
+<li>匹配逻辑：开始时间按「快照时间 &gt;= 开始时间」过滤，结束时间按「快照时间 &lt;= 结束日期 23:59:59」过滤；预警状态按 status 精确匹配（有预警/无预警），选「全部」则不过滤。</li>
+<li>重置：恢复全部筛选条件为默认值并重新查询。</li>
+<li>提供「重置」「查询」操作，支持多条件组合过滤。</li>
+<li>分页浏览：每页 10 条，显示格式「第 X 页 / 共 Y 页」，含「上一页 / 下一页」；第 1 页时上一页禁用，最后一页时下一页禁用。</li>
+<li>日期时间选择器：为全局共用组件，点击时间输入框后在其下方弹出，含月份导航、日历网格、时/分/秒滚动选择及「此刻」「确定」按钮。</li>
+</ul>
+<h4 id="324">3.2.4 历史快照详情</h4>
+<ul>
+<li>点击「查看」进入历史快照详情页，布局与预测分析页基本一致：工艺段节点卡片、输入窗口、实时/预测出厂水数据、四张趋势图。差异：左上角显示快照信息卡片。</li>
+<li>快照信息卡片：显示在左侧面板上方，含快照预测时间、模型版本、预警状态及「← 返回」按钮。</li>
+<li>返回逻辑：点击「← 返回」退出快照模式，隐藏快照信息卡片，切回历史快照列表页，恢复实时数据刷新；底部「历史快照详情」区块同步显示预测时间、模型版本、预警状态，支持基于时间轴复盘该时段的输入与输出变量数据。</li>
+</ul>
+<h2 id="4">4. 页面与交互设计</h2>
+<h3 id="41">4.1 页面导航</h3>
+<table>
+<thead>
+<tr>
+<th>页面</th>
+<th>层级</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预测分析</td>
+<td>一级 Tab</td>
+<td>仿真预测结果总览与趋势分析</td>
+</tr>
+<tr>
+<td>历史快照</td>
+<td>一级 Tab</td>
+<td>历史运行工况列表与回溯</td>
+</tr>
+<tr>
+<td>历史快照详情</td>
+<td>二级页面</td>
+<td>由历史快照列表“查看”进入</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42">4.2 主要交互元素</h3>
+<ul>
+<li>导航：预测分析 / 历史快照 顶部 Tab 切换。</li>
+<li>卡片：工艺段节点卡片展开/收起、查看趋势、工艺段标签联动。</li>
+<li>趋势图：悬停拾取数据、阈值线、超限点标识、“此刻”定位。</li>
+<li>弹窗：超限预警弹窗（确定 / × 关闭）。</li>
+<li>查询：起止时间选择、预警状态下拉、重置、查询。</li>
+<li>翻页与返回：上一页、下一页、‹ ›、返回列表、返回。</li>
+</ul>
+<h3 id="43">4.3 页面跳转与状态重置</h3>
+<p>页面跳转关系：顶部切换按钮进入「预测分析页」或「历史快照列表页」；在列表页点击某行「查看」进入「快照详情页」（复用预测分析容器）；在详情页点击「← 返回」回到历史快照列表页。</p>
+<p>状态重置核心原则：每次进入预测分析页面（无论页面切换还是进入快照详情），都重置为出厂水默认选中状态。</p>
+<table>
+<thead>
+<tr>
+<th>触发场景</th>
+<th>重置行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>页面初始化</td>
+<td>默认选中出厂水卡片，右侧展示出厂水 4 个图表</td>
+</tr>
+<tr>
+<td>从历史快照点「预测分析」切换</td>
+<td>重置为出厂水默认选中，恢复实时数据</td>
+</tr>
+<tr>
+<td>从快照详情点「返回」列表</td>
+<td>重置为出厂水默认选中（下次进入预测分析时生效）</td>
+</tr>
+<tr>
+<td>进入快照详情页</td>
+<td>先重置为出厂水默认选中，再加载快照数据</td>
+</tr>
+<tr>
+<td>从预测分析切换到历史快照</td>
+<td>退出实时模式，不修改卡片选中状态（下次切回时重置）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="44">4.4 全局业务规则（仅供参考）</h3>
+<p><strong>数据更新机制</strong>：快照详情模式下跳过更新，数据冻结。</p>
+<p><strong>数据精度</strong>：左侧面板数值保留 4 位小数；水质卡片数值中流量取整、其余保留 2 位小数；图表 tooltip 中流量取整、其余保留 2 位小数。</p>
+<p><strong>视觉规范（状态色）</strong>：达标为绿色 #52C41A、不达标为红色 #F5222D、预测值为蓝色 #1890FF、实测值为白色 #FFFFFF。</p>
+<h2 id="5">5. 数据指标定义</h2>
+<h3 id="51">5.1 进水（原水）指标</h3>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>单位</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>进水流量</td>
+<td>m³/h</td>
+<td>原水前池流量</td>
+</tr>
+<tr>
+<td>进水温度</td>
+<td>℃</td>
+<td>原水前池温度</td>
+</tr>
+<tr>
+<td>进水 pH</td>
+<td>-</td>
+<td>原水前池 pH 值</td>
+</tr>
+<tr>
+<td>进水浊度</td>
+<td>NTU</td>
+<td>原水前池浊度</td>
+</tr>
+<tr>
+<td>进水氨氮</td>
+<td>mg/L</td>
+<td>原水氨氮浓度</td>
+</tr>
+<tr>
+<td>进水溶解氧</td>
+<td>mg/L</td>
+<td>原水溶解氧浓度</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52">5.2 出厂水指标</h3>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>单位</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>出厂水流量</td>
+<td>m³/h</td>
+<td>出厂水流量</td>
+</tr>
+<tr>
+<td>出厂水浊度</td>
+<td>NTU</td>
+<td>出厂水浊度</td>
+</tr>
+<tr>
+<td>出厂水余氯</td>
+<td>mg/L</td>
+<td>出厂水余氯浓度</td>
+</tr>
+<tr>
+<td>出厂水 pH</td>
+<td>-</td>
+<td>出厂水 pH 值</td>
+</tr>
+</tbody>
+</table>
+<h3 id="53">5.3 指标状态标签</h3>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>达标</td>
+<td>指标处于安全阈值范围内</td>
+</tr>
+<tr>
+<td>不达标</td>
+<td>指标超出安全阈值范围，红色字体标注</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6">6. 数据接口概览</h2>
+<table class="api-table">
+<thead>
+<tr>
+<th>页面内容</th>
+<th>接口名称</th>
+<th>接口</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预测分析-当前实际输入窗口</td>
+<td>查看最近的一个快照详情</td>
+<td>/api/snapshots/latest/{plantId}</td>
+<td>本质是最近一次历史快照详情</td>
+</tr>
+<tr>
+<td>预测分析-其他</td>
+<td>查询预测数据<br>查询历史指标数据<br>查询关键指标历史数据<br>查询水厂指标列表<br>查询实时指标数据</td>
+<td>/api/prediction/forecast<br>/api/prediction/history<br>/api/prediction/history/key<br>/api/prediction/indicators<br>/api/prediction/realtime</td>
+<td>查询快照详情会返回一个 snapshotTime 字段，需用该字段结合「预测分析」里的 5 个接口进一步查询需要展示的数据</td>
+</tr>
+<tr>
+<td>历史快照列表</td>
+<td>查询历史快照列表</td>
+<td>/api/snapshots</td>
+<td>无</td>
+</tr>
+<tr>
+<td>历史快照详情</td>
+<td>查看快照详情</td>
+<td>/api/snapshots/{id}</td>
+<td>无</td>
+</tr>
+<tr>
+<td>出厂水水质达标判断</td>
+<td>查询全部水质达标标准</td>
+<td>/api/water-quality-standards/all</td>
+<td>若在上下限范围内则为「达标」，若否则「不达标」</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7">7. 备注说明</h2>
+<p>本模块定位为数字孪生前端展示模块，专注于已有仿真结果的可视化呈现，暂不接入运营平台的模型评分与工艺仿真工作台功能。上述功能涉及后台参数配置与模型运算，不在本模块范围内。</p>
+<p>原型链接：https://simulation1.coze.site</p>
+  </main>
+</div>
+<script>
+(function() {
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.sidebar .toc a'));
+  if (!navLinks.length) return;
+  // 建立 链接 -> 目标标题 映射
+  var map = navLinks.map(function(a) {
+    var id = decodeURIComponent(a.getAttribute('href').slice(1));
+    return { link: a, target: document.getElementById(id) };
+  }).filter(function(m) { return m.target; });
+
+  function setActive(link) {
+    navLinks.forEach(function(a) { a.classList.remove('active'); });
+    if (link) link.classList.add('active');
+  }
+
+  // 点击即选中
+  navLinks.forEach(function(a) {
+    a.addEventListener('click', function() { setActive(a); });
+  });
+
+  // 滚动跟随（scrollspy）
+  function onScroll() {
+    var pos = window.scrollY + 90;
+    var current = map[0];
+    for (var i = 0; i < map.length; i++) {
+      if (map[i].target.offsetTop <= pos) current = map[i];
+      else break;
+    }
+    if (current) setActive(current.link);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+</body>
+</html>
